@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
-
+<!--We only want to show 4 items at a time-->
     <GridView
         android:layout_width="match_parent"
         android:layout_height="match_parent"

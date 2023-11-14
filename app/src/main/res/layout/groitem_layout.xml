@@ -1,0 +1,32 @@
+<!-- layout for each GroItem to be changed later -->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="8dp">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_weight="5"
+        android:layout_height="wrap_content"
+        android:id="@+id/itemImageView"
+        android:src="@drawable/item_bananas"
+        />
+
+    <TextView
+        android:id="@+id/itemNameTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Bananas"
+        android:textColor="#000000"
+        android:autoSizeTextType="uniform"
+        android:autoSizeMinTextSize="12sp"
+        android:autoSizeMaxTextSize="100sp"/>
+
+    <!-- Will need another textview for quantity later-->
+<!--    good spot to add quantity could be in the top right corner of the view hovering over the imageview-->
+
+</LinearLayout>
