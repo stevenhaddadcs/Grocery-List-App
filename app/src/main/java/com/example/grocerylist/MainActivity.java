@@ -10,6 +10,9 @@ import android.widget.ImageView;
 import com.example.grocerylist.model.GroList;
 import com.example.grocerylist.model.GroItem;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 //allows us to use new android features on older devices (extends fragment activity too)
 //might be removed in the future
@@ -22,8 +25,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        //create a list of grocery items
+        ArrayList<GroItem> g = new ArrayList<GroItem>();
+        g.add(new GroItem("yogurt", "item_yogurt"));
         //instantiate the grocery list
-        groList = new GroList();
+        groList = new GroList(g);
+
         //find the gridview in the layout
         GridView gridView = findViewById(R.id.gridView);
         //create the adapter for the gridview

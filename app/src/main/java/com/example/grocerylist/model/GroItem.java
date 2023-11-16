@@ -20,6 +20,7 @@ public class GroItem {
         this.name = name;
         this.imageName = image;
         this.quantity = quantity;
+
     }
 
     public String getName(){

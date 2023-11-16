@@ -1,10 +1,12 @@
 package com.example.grocerylist;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.grocerylist.model.GroItem;
@@ -22,7 +24,7 @@ public class GroListAdapter extends BaseAdapter {
     public GroListAdapter(Context context, GroList items){
         this.context = context;
         this.items = items;
-        this.inflater = LayoutInflater.from(context);
+        this.inflater = LayoutInflater.from(this.context);
     }
 
     @Override
@@ -41,29 +43,26 @@ public class GroListAdapter extends BaseAdapter {
     //todo: I don't quite understand how this works, unsure if it works - steven
     @Override
     public View getView(int i, View convertView, ViewGroup parent) {
-        ViewHolder viewHolder;
-
         if (convertView == null) {
-            //LayoutInflater is used to create instances of the layout views that will be used for each item in the GridView.
+            // If convertView is null, inflate the layout
             convertView = inflater.inflate(R.layout.groitem_layout, parent, false);
-            viewHolder = new ViewHolder();
-            viewHolder.itemNameTextView = convertView.findViewById(R.id.itemNameTextView);
-            convertView.setTag(viewHolder);
-        } else {
-            viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        //find the item at the index
-        GroItem groItem = items.getItemAtIndex(i);
-        //set the text of the textview to the name of the item
-        viewHolder.itemNameTextView.setText(groItem.getName());
+        // Find the TextView in the inflated layout and set its text
+        TextView itemNameTextView = convertView.findViewById(R.id.itemNameTextView);
+        ImageView itemImageView = convertView.findViewById(R.id.itemImageView);
+
+        // Find the item at the index
+        GroItem groItem = getItem(i);
+
+        // Set the text of the TextView to the name of the item
+        itemNameTextView.setText(groItem.getName());
+        //gets the id of the drawable resource that corresponds to the image name
+        int drawableResourceId = context.getResources().getIdentifier(groItem.getImageName(), "drawable", context.getPackageName());
+        //itemImageView.setImageResource(R.drawable.item_yogurt);
+        itemImageView.setImageResource(drawableResourceId);
+
 
         return convertView;
-    }
-
-    //ViewHolder Pattern: The ViewHolder pattern is used to store references to the child views of the item layout.
-    // This avoids the need to call findViewById repeatedly for the same views:
-    private static class ViewHolder {
-        TextView itemNameTextView;
     }
 }
