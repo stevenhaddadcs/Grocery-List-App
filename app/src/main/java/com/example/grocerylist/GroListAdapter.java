@@ -38,7 +38,7 @@ public class GroListAdapter extends BaseAdapter {
     // TODO: not sure if necessary at all
     @Override
     public long getItemId(int i) {
-        return -1;
+        return i;
     }
     //todo: I don't quite understand how this works, unsure if it works - steven
     @Override

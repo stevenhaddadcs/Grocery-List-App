@@ -30,6 +30,9 @@ public class MainActivity extends AppCompatActivity {
         //create a list of grocery items
         ArrayList<GroItem> g = new ArrayList<GroItem>();
         g.add(new GroItem("yogurt", "item_yogurt"));
+        g.add(new GroItem("bananas", "item_bananas"));
+        g.add(new GroItem("broccoli", "item_broccoli"));
+        g.add(new GroItem("carrots", "item_carrots"));
         //instantiate the grocery list
         groList = new GroList(g);
 
@@ -39,6 +42,5 @@ public class MainActivity extends AppCompatActivity {
         GroListAdapter adapter = new GroListAdapter(this, groList);
         //set the adapter for the gridview
         gridView.setAdapter(adapter);
-        setContentView(R.layout.activity_main);
     }
 }
