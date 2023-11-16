@@ -71,6 +71,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void addClick(View v){
-        startActivity(new Intent(MainActivity.this, activity_add.class));
+        startActivity(new Intent(MainActivity.this, AddActivity.class));
     }
 }
