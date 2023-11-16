@@ -19,12 +19,14 @@ public class GroListAdapter extends BaseAdapter {
     private Context context;
     private GroList items;
     private LayoutInflater inflater;
+    private int height;
 
 
-    public GroListAdapter(Context context, GroList items){
+    public GroListAdapter(Context context, GroList items, int height){
         this.context = context;
         this.items = items;
         this.inflater = LayoutInflater.from(this.context);
+        this.height = height;
     }
 
     @Override
@@ -47,7 +49,8 @@ public class GroListAdapter extends BaseAdapter {
             // If convertView is null, inflate the layout
             convertView = inflater.inflate(R.layout.groitem_layout, parent, false);
         }
-
+        //sets the height of the gridview items to half the height of the gridview so that we can get two items per row, 4 per screen
+        convertView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height/2));
         // Find the TextView in the inflated layout and set its text
         TextView itemNameTextView = convertView.findViewById(R.id.itemNameTextView);
         ImageView itemImageView = convertView.findViewById(R.id.itemImageView);

@@ -3,9 +3,12 @@ package com.example.grocerylist;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.example.grocerylist.model.GroList;
 import com.example.grocerylist.model.GroItem;
@@ -36,11 +39,32 @@ public class MainActivity extends AppCompatActivity {
         //instantiate the grocery list
         groList = new GroList(g);
 
-        //find the gridview in the layout
+        // find the gridview and linearlayout in the layout
         GridView gridView = findViewById(R.id.gridView);
-        //create the adapter for the gridview
-        GroListAdapter adapter = new GroListAdapter(this, groList);
-        //set the adapter for the gridview
-        gridView.setAdapter(adapter);
+        LinearLayout linearLayout = findViewById(R.id.linearLayout);
+
+        //this segment is needed because the linearlayout is not drawn on the screen yet,
+        // so we need to wait until it is drawn to get the height,
+        // which will be used to set the height of the gridview items
+        //https://stackoverflow.com/questions/18861585/get-content-view-size-in-oncreate
+        // set up a global layout listener to wait until the linearlayout
+        // (which contains the gridview) is drawn on the screen
+        linearLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                // remove the listener to avoid multiple calls for EVERY layout pass
+                linearLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+
+                // now we can get the height for the drawn gridview
+                int height = gridView.getHeight();
+                Log.i("MYDEBUG", "LinearLayout height: " + linearLayout.getHeight());
+                Log.i("MYDEBUG", "GridView height: " + gridView.getHeight());
+
+                // create the adapter for the gridview send the height of the gridview to the adapter
+                GroListAdapter adapter = new GroListAdapter(MainActivity.this, groList, height);
+                // set the adapter for the gridview
+                gridView.setAdapter(adapter);
+            }
+        });
     }
 }

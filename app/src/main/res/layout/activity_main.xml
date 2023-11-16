@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/linearLayout"
     tools:context=".MainActivity">
 <!--We only want to show 4 items at a time-->
 
@@ -14,10 +15,7 @@
         android:id="@+id/gridView"
         android:numColumns="2"
         android:horizontalSpacing="10dp"
-        android:verticalSpacing="10dp">
-
-
-
+        android:verticalSpacing="0dp">
 
     </GridView>
 
