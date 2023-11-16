@@ -1,13 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/linearLayout"
+    android:id="@+id/frameLayout"
     tools:context=".MainActivity">
 <!--We only want to show 4 items at a time-->
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/add_item"
+        android:contentDescription="Click to add items to list"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:src="@drawable/ic_add_item"
+        android:onClick="addClick"
+        app:fabSize="normal"
+        android:layout_margin="16dp" />
 
     <GridView
         android:layout_width="match_parent"
@@ -19,4 +29,4 @@
 
     </GridView>
 
-</LinearLayout>
+</FrameLayout>
