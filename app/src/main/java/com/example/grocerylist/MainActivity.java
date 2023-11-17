@@ -14,9 +14,10 @@ import android.widget.ImageView;
 
 import com.example.grocerylist.model.GroList;
 import com.example.grocerylist.model.GroItem;
+import com.example.grocerylist.model.GroItemMap;
 
 import java.util.ArrayList;
-import java.util.List;
+
 
 
 //allows us to use new android features on older devices (extends fragment activity too)
@@ -34,10 +35,14 @@ public class MainActivity extends AppCompatActivity {
 
         //create a list of grocery items
         ArrayList<GroItem> g = new ArrayList<>();
-        g.add(new GroItem("yogurt", "item_yogurt"));
-        g.add(new GroItem("bananas", "item_bananas"));
-        g.add(new GroItem("broccoli", "item_broccoli"));
-        g.add(new GroItem("carrots", "item_carrots"));
+        GroItemMap map = new GroItemMap();
+        g.add(new GroItem("Yogurt", map.getImageName("Yogurt")));
+        g.add(new GroItem("Bananas", map.getImageName("Bananas")));
+        g.add(new GroItem("Broccoli", map.getImageName("Broccoli")));
+        g.add(new GroItem("Carrots", map.getImageName("Carrots")));
+        g.add(new GroItem("Cereal", map.getImageName("Cereal")));
+        g.add(new GroItem("Chicken Breasts", map.getImageName("Chicken Breasts")));
+        g.add(new GroItem("Chips", map.getImageName("Chips")));
         //instantiate the grocery list
         groList = new GroList(g);
 
