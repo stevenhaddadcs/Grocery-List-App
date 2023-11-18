@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
         //create a list of grocery items
         ArrayList<GroItem> g = new ArrayList<>();
         GroItemMap map = new GroItemMap();
+        //adding items to the list just to test out how the gridview looks
         g.add(new GroItem("Yogurt", map.getImageName("Yogurt")));
         g.add(new GroItem("Bananas", map.getImageName("Bananas")));
         g.add(new GroItem("Broccoli", map.getImageName("Broccoli")));
@@ -43,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
         g.add(new GroItem("Cereal", map.getImageName("Cereal")));
         g.add(new GroItem("Chicken Breasts", map.getImageName("Chicken Breasts")));
         g.add(new GroItem("Chips", map.getImageName("Chips")));
-        //instantiate the grocery list
+        //instantiate the grocery list with the list of items
         groList = new GroList(g);
 
         // find the gridview and linearlayout in the layout
