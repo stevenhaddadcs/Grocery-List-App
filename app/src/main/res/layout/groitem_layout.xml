@@ -1,32 +1,58 @@
-<!-- layout for each GroItem to be changed later -->
-
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- layout for each GroItem in the GridView -->
+<!-- Changed from Linear to RelativeLayout so we could put the circle in the top right -->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="8dp">
+    
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
     <ImageView
-        android:layout_width="match_parent"
-        android:layout_weight="5"
-        android:layout_height="wrap_content"
         android:id="@+id/itemImageView"
-        android:src="@drawable/item_bananas"
-        />
+        android:layout_width="match_parent"
+        android:layout_height= "0dp"
+        android:layout_weight="3"
+        android:src="@drawable/item_bananas" />
 
     <TextView
         android:id="@+id/itemNameTextView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height= "0dp"
         android:layout_weight="1"
-        android:text="Bananas"
-        android:textColor="#FFFFFF"
+        android:gravity="bottom"
+        android:autoSizeMaxTextSize="150sp"
+        android:autoSizeMinTextSize="25sp"
         android:autoSizeTextType="uniform"
-        android:autoSizeMinTextSize="12sp"
-        android:autoSizeMaxTextSize="100sp"/>
+        android:text="Bananas"
+        android:textColor="#FFFFFF" />
+    </LinearLayout>
 
-    <!-- Will need another textview for quantity later-->
-<!--    good spot to add quantity could be in the top right corner of the view hovering over the imageview-->
+<!--  FrameLayout to hold the quantity text view-->
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true">
+<!-- White circle background used to make sure it displays the quantities against any background-->
+        <TextView
+            android:id="@+id/itemQuantityTextView"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:autoSizeMaxTextSize="100sp"
+            android:autoSizeMinTextSize="12sp"
+            android:autoSizeTextType="uniform"
+            android:background="@drawable/quantity_background"
+            android:text="Quantity"
+            android:textAlignment="center"
+            android:textColor="#000000" />
+    </FrameLayout>
 
-</LinearLayout>
+</RelativeLayout>

@@ -42,30 +42,33 @@ public class GroListAdapter extends BaseAdapter {
     public long getItemId(int i) {
         return i;
     }
-    //todo: I don't quite understand how this works, unsure if it works - steven
+
+    //changed name to itemView from convertView
     @Override
-    public View getView(int i, View convertView, ViewGroup parent) {
-        if (convertView == null) {
-            // If convertView is null, inflate the layout
-            convertView = inflater.inflate(R.layout.groitem_layout, parent, false);
+    public View getView(int i, View itemView, ViewGroup parent) {
+        if (itemView == null) {
+            // If itemView is null, inflate the layout
+            itemView = inflater.inflate(R.layout.groitem_layout, parent, false);
         }
         //sets the height of the gridview items to half the height of the gridview so that we can get two items per row, 4 per screen
-        convertView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height/2));
+        itemView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height/2));
         // Find the TextView in the inflated layout and set its text
-        TextView itemNameTextView = convertView.findViewById(R.id.itemNameTextView);
-        ImageView itemImageView = convertView.findViewById(R.id.itemImageView);
+        TextView itemNameTextView = itemView.findViewById(R.id.itemNameTextView);
+        TextView itemQuantityTextView = itemView.findViewById(R.id.itemQuantityTextView);
+        ImageView itemImageView = itemView.findViewById(R.id.itemImageView);
 
         // Find the item at the index
         GroItem groItem = getItem(i);
 
         // Set the text of the TextView to the name of the item
         itemNameTextView.setText(groItem.getName());
+        itemQuantityTextView.setText(groItem.getQuantityString());
         //gets the id of the drawable resource that corresponds to the image name
         int drawableResourceId = context.getResources().getIdentifier(groItem.getImageName(), "drawable", context.getPackageName());
         //itemImageView.setImageResource(R.drawable.item_yogurt);
         itemImageView.setImageResource(drawableResourceId);
 
 
-        return convertView;
+        return itemView;
     }
 }

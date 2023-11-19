@@ -34,6 +34,10 @@ public class GroItem {
     public int getQuantity(){
         return quantity;
     }
+
+    public String getQuantityString(){
+        return Integer.toString(quantity);
+    }
     public void setQuantity(int quantity){
         this.quantity = quantity;
     }
