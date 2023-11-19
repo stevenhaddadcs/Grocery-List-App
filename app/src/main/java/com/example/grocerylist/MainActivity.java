@@ -72,9 +72,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         for(int i = 0; i <= g.size() - 1; i++){
             listNames.add(g.get(i).getName());
         }
-
         //instantiate the grocery list
         groList = new GroList(g);
+        Log.i("MYDEBUG", "Grocery List size: "+ this.groList.length());
 
         // find the gridview and framelayout in the layout
         GridView gridView = findViewById(R.id.gridView);
@@ -113,7 +113,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                         if (result.getResultCode() == Activity.RESULT_OK) {
                             Intent data = result.getData();
                             String item = data.getStringExtra("item");
-                            g.add(new GroItem(item, map.getImageName(item)));
+                            //replaced g.add(new GroItem(item, map.getImageName(item))); with this
+                            groList.addItem(new GroItem(item, map.getImageName(item)));
                             listNames.add(item);
 
                             //For adding new item image onto grocery list.
@@ -151,6 +152,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         });
 
         int count = 0;
+        Log.i("MYDEBUG", "Grocery List size: "+ this.groList.length());
         for(GroItem list : this.groList.getItems()){
             text += list.getName();
             if(count < this.groList.length()-1){
