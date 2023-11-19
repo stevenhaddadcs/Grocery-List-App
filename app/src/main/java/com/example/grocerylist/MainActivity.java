@@ -183,7 +183,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         // if shake is detected
         // speak the text provided and QUEUE_FLUSH to replace all the entries in the playback queue with a new entry
-        // 20 is determined from trial and error for ideal shaking
+        // 20 is determined from trial and error for to prevent unintended shake from activating speech
         if (difference > 20) {
             Log.i("MYDEBUG", "Acceleration : " + difference);
             tts.speak(groList.toString(), TextToSpeech.QUEUE_FLUSH, null, null);

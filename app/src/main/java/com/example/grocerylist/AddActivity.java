@@ -1,22 +1,41 @@
 package com.example.grocerylist;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.speech.RecognitionListener;
+import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.GridView;
+import android.widget.TextView;
+import android.widget.Toast;
+import android.Manifest;
 
 import com.example.grocerylist.model.GroList;
 import com.example.grocerylist.model.GroItem;
 import com.example.grocerylist.model.GroItemMap;
 
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 public class AddActivity extends AppCompatActivity {
 
@@ -28,6 +47,15 @@ public class AddActivity extends AppCompatActivity {
 
     boolean flag = false;
 
+    //used for speech-to-text
+    SpeechRecognizer speechRecognizer;
+    RecognitionListener r;
+    Intent iSpeechRecognizer;
+    ArrayList<String> voiceResults;
+    ArrayList<String> storeSearchResult;
+    ImageView searchButton;
+
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -221,7 +249,148 @@ public class AddActivity extends AppCompatActivity {
         //onItemClick() is invoked.
         gridView.setOnItemClickListener(this::onItemClick);
 
+        //initialize button
+        searchButton = findViewById(R.id.search_button);
+
+        //to store items searched with voice-to-text
+        voiceResults = new ArrayList<>();
+
+        // check if the phone allow permission to access microphone
+        // https://stackoverflow.com/questions/43464678/why-record-audio-is-returning-permission-granted-everytime-in-marshmallow
+        if(ContextCompat.checkSelfPermission(this,Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED){
+            checkAudioPermission();
+        }
+
+        //create speech recognizer and recognizer intent
+        speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
+        iSpeechRecognizer = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        iSpeechRecognizer.putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE, "en"); //language english as preference
+        iSpeechRecognizer.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        iSpeechRecognizer.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 5); //allow max of 5 results that matches the voice
+
+        //initialize and set recognition listener
+        //used for receiving notifications from the SpeechRecognizer when the recognition related events occur
+        r = new RecognitionListener() {
+            @Override
+            public void onReadyForSpeech(Bundle bundle) {
+            }
+            @Override
+            public void onBeginningOfSpeech() {
+            }
+            @Override
+            public void onRmsChanged(float v) {
+            }
+            @Override
+            public void onBufferReceived(byte[] bytes) {
+            }
+            @Override
+            public void onEndOfSpeech() {
+            }
+            @Override
+            public void onError(int i) {
+                Log.i("MYDEBUG", "Error listening for speech: " + i);
+            }
+
+            @Override
+            public void onResults(Bundle bundle) {
+                //get results from the speech with max number of 5
+                voiceResults = bundle.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+                searchItems(); //search for the items found in speech-to-text
+            }
+
+            @Override
+            public void onPartialResults(Bundle bundle) {
+            }
+            @Override
+            public void onEvent(int i, Bundle bundle) {
+            }
+        };
+
+        speechRecognizer.setRecognitionListener(r);
+
+        /*
+            set on touch listener for the microphone button
+            when pressed gesture starts, speech recognizer starts listening
+            when pressed gesture finishes, speech recognizer stop listening
+        */
+        searchButton.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent e) {
+                switch(e.getAction()){
+                    case MotionEvent.ACTION_UP:
+                        speechRecognizer.stopListening();
+                        searchItems();
+                        break;
+
+                    case MotionEvent.ACTION_DOWN:
+                        speechRecognizer.startListening(iSpeechRecognizer);
+                }
+                return false;
+            }
+        });
+
     }
+
+    /*
+        try to match the 5 results generated from speech recognition with itemColl that contains all the items that is available for the user to add
+     */
+    private void searchItems(){
+        storeSearchResult = new ArrayList<>();
+
+        if(voiceResults != null && itemColl != null){
+            for(String s : voiceResults){
+                if(s.length() > 2){
+                    for(GroItem item: itemColl.getItems()){
+//                        String longest = voiceResults.stream().max(Comparator.comparingInt(String::length)).get();
+                        if(Pattern.compile(Pattern.quote(s.substring(0, Math.min(s.length(), 7))), Pattern.CASE_INSENSITIVE).matcher(item.getName().replaceAll("[-+.^:,]"," ")).find()){
+                            if(!storeSearchResult.contains(item.getName())){
+                                storeSearchResult.add(item.getName());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if(storeSearchResult.isEmpty()){
+            Log.i("MYDEBUG", "Item not found ");
+
+        }else{
+            for(String i : storeSearchResult){
+                Log.i("MYDEBUG", "Search item: " + i);
+            }
+        }
+    }
+
+    /*
+        request for permissions to record audio
+     */
+    private void checkAudioPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.RECORD_AUDIO},1);
+        }
+    }
+
+    /*
+        to check if all the permissions are granted, toast will appear to show permission is denied or granted
+        according to stackoverflow: https://stackoverflow.com/questions/38260175/android-onrequestpermissionsresult-grantresults-size-1
+        it is not recommended to check the first permission only as user might allow first permission and denied the rest
+    */
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == 1 && grantResults.length > 0 ) {
+            for (int grantResult : grantResults) {
+                if (grantResult == PackageManager.PERMISSION_DENIED) {
+                    Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+
+        Toast.makeText(this,"Permission Granted", Toast.LENGTH_SHORT).show();
+    }
+
 
     //On click of item in gridView, item is bundled and sent to grocery list in MainActivity
     //(As long as item is not already on the grocery list)
@@ -250,6 +419,32 @@ public class AddActivity extends AppCompatActivity {
         }
         else{
             flag = false;
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        speechRecognizer.setRecognitionListener(r);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        //destroy when not in use
+        if(speechRecognizer != null){
+            speechRecognizer.destroy();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        //destroy when not in use
+        if(speechRecognizer != null){
+            speechRecognizer.destroy();
         }
     }
 }

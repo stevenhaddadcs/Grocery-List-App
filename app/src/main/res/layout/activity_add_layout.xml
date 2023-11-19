@@ -9,6 +9,28 @@
     tools:context=".AddActivity">
 
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_centerInParent="true"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_height="wrap_content">
+<!--        <EditText-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:id="@+id/searchbar"-->
+<!--            android:layout_toLeftOf="@id/search_button"-->
+<!--            android:padding="10dp"-->
+<!--            android:hint="Tap to Speak" />-->
+        <ImageView
+            android:id="@+id/search_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/mic" />
+    </RelativeLayout>
+    
+
     <GridView
         android:id="@+id/gridView"
         android:layout_width="match_parent"

@@ -3,6 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.grocerylist">
 
+    <!-- Allows an application to record audio and internet access-->
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
         android:allowBackup="true"
@@ -38,8 +41,11 @@
     </application>
 
     <queries>
+        <package android:name="com.google.android.googlequicksearchbox"/>
+
         <intent>
             <action android:name="android.intent.action.TTS_SERVICE" />
+
         </intent>
     </queries>
 
