@@ -47,7 +47,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     //used for text to speech
     private TextToSpeech tts;
-    private String text = "";
 
     //List of all item's names in grocery list
     ArrayList<String> listNames = new ArrayList<>();
@@ -151,15 +150,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             }
         });
 
-        int count = 0;
-        Log.i("MYDEBUG", "Grocery List size: "+ this.groList.length());
-        for(GroItem list : this.groList.getItems()){
-            text += list.getName();
-            if(count < this.groList.length()-1){
-                text += ", ";
-            }
-            count ++;
-        }
 
         //OnClickListner to start AddActivity
         //Sends an arraylist of Strings with names of items in current grocery list.
@@ -196,7 +186,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         // 20 is determined from trial and error for ideal shaking
         if (difference > 20) {
             Log.i("MYDEBUG", "Acceleration : " + difference);
-            tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, null);
+            tts.speak(groList.toString(), TextToSpeech.QUEUE_FLUSH, null, null);
         }
     }
 

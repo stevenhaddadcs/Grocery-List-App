@@ -81,6 +81,21 @@ public class GroList implements Parcelable {
     }
 
     @Override
+    public String toString(){
+        StringBuilder text = new StringBuilder();
+        int count = 0;
+        for(GroItem groItem : this.getItems()){
+            //uses toString when appending GroItem to text
+            text.append(groItem);
+            if(count < this.length()-1){
+                text.append(", ");
+            }
+            count ++;
+        }
+        return text.toString();
+    }
+
+    @Override
     public int describeContents() {
         return 0;
     }
