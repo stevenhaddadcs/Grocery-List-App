@@ -1,17 +1,18 @@
 package com.example.grocerylist;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcel;
 import android.util.Log;
+import android.view.View;
 import android.view.ViewTreeObserver;
+import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.GridView;
 
 import com.example.grocerylist.model.GroList;
 import com.example.grocerylist.model.GroItem;
 import com.example.grocerylist.model.GroItemMap;
-import com.example.grocerylist.model.GroItem;
 
 import java.util.ArrayList;
 
@@ -19,8 +20,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class AddActivity extends AppCompatActivity {
 
-    GroList grolist = new GroList();
+    //list to contain names of all items in current grocery list.
+    ArrayList<String> listnames = new ArrayList<>();
+
+    //list to contain all items available for user to add.
     GroList itemColl = new GroList();
+
+    boolean flag = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,7 +35,15 @@ public class AddActivity extends AppCompatActivity {
 
         //Receiving list from MainActivity
         Intent intent = getIntent();
-        grolist = intent.getParcelableExtra("grolist");
+        listnames = intent.getStringArrayListExtra("listNames");
+        if(listnames == null){
+            Log.i("MYDEBUG", "empty");
+        }
+        else{
+            for (int i = 0; i <= listnames.size() - 1; i++) {
+                Log.i("MYDEBUG", listnames.get(i));
+            }
+        }
 
         //Displaying list of available items to add
         ArrayList<GroItem> g = new ArrayList<>();
@@ -175,13 +189,11 @@ public class AddActivity extends AppCompatActivity {
 
         //instantiate the collection list
         itemColl = new GroList(g);        //create a list of all available items
-
-
+        
         // find the gridview and linearlayout in the layout
         GridView gridView = findViewById(R.id.gridView);
         LinearLayout linearLayout = findViewById(R.id.linearLayout);
-
-
+        
         //this segment is needed because the framelayout is not drawn on the screen yet,
         // so we need to wait until it is drawn to get the height,
         // which will be used to set the height of the gridview items
@@ -205,9 +217,39 @@ public class AddActivity extends AppCompatActivity {
                 gridView.setAdapter(adapter);
             }
         });
-
-
+        //When item is selected, OnClickListener is triggered.
+        //onItemClick() is invoked.
+        gridView.setOnItemClickListener(this::onItemClick);
 
     }
 
+    //On click of item in gridView, item is bundled and sent to grocery list in MainActivity
+    //(As long as item is not already on the grocery list)
+    public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+        for (int i = 0; i <= listnames.size() - 1; i++) {
+            //Checks if selected item is already in the grocery list.
+            if (listnames.get(i).equals(itemColl.getItemAtIndex(position).getName())) {
+                flag = true;
+                break;
+            }
+            else{
+                flag = false;
+                Log.i("MYDEBUG",  itemColl.getItemAtIndex(position).getName());
+                Log.i("MYDEBUG",  listnames.get(i));
+            }
+        }
+        if (flag == false){
+            // return to MainActivity with selected item
+            Bundle b = new Bundle();
+            b.putString("item", itemColl.getItemAtIndex(position).getName());
+            Intent resultIntent = new Intent(getApplicationContext(), MainActivity.class);
+            resultIntent.putExtras(b);
+            Log.i("MYDEBUG", itemColl.getItemAtIndex(position).getName());
+            setResult(Activity.RESULT_OK, resultIntent);
+            finish();
+        }
+        else{
+            flag = false;
+        }
+    }
 }
