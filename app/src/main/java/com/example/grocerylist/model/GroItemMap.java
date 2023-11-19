@@ -16,7 +16,7 @@ import java.util.HashMap;
             // then i used ai to generate the appropriate display names according to the image names and
             // add all these put statements to the hashmap (would have been tedious to do manually)
             // considered using a csv file but this makes it more efficient and easier to read
-            groItemMap.put("All-Purpose Cleaner", "item_all-purpose_cleaner");
+            groItemMap.put("All-Purpose Cleaner", "item_all_purpose_cleaner"); //cannot include '-' in drawable file names
             groItemMap.put("Almond Milk", "item_almond_milk");
             groItemMap.put("Aluminum Foil", "item_aluminum_foil");
             groItemMap.put("Apple Juice", "item_apple_juice");
@@ -30,7 +30,7 @@ import java.util.HashMap;
             groItemMap.put("Baking Powder", "item_baking_powder");
             groItemMap.put("Baking Soda", "item_baking_soda");
             groItemMap.put("Bananas", "item_bananas");
-            groItemMap.put("Band-Aids", "item_band-aids");
+            groItemMap.put("Band-Aids", "item_band_aids"); //cannot include '-' in drawable file names
             groItemMap.put("Basil", "item_basil");
             groItemMap.put("BBQ Sauce", "item_bbq_sauce");
             groItemMap.put("Beer", "item_beer");
@@ -154,6 +154,9 @@ import java.util.HashMap;
             groItemMap.put("White Wine", "item_white_wine");
             groItemMap.put("Yogurt", "item_yogurt");
             groItemMap.put("Ziplock Bags", "item_ziplock_bags");
+
+            //for items that don't have an image
+            groItemMap.put("Placeholder", "item_placeholder");
         }
 
         public String getImageName(String displayName) {
