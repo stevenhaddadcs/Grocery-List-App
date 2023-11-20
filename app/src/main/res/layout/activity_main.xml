@@ -18,6 +18,15 @@
         app:fabSize="normal"
         android:layout_margin="16dp" />
 
+     <TextView
+        android:id="@+id/list_empty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center|center_horizontal"
+        android:textSize="30sp"
+        android:alpha="128"
+        android:text="No items on your list" />
+
     <GridView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
