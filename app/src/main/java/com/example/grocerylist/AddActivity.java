@@ -16,9 +16,10 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
+import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -45,13 +46,15 @@ public class AddActivity extends AppCompatActivity {
     //list to contain names of all items in current grocery list.
     ArrayList<String> listnames = new ArrayList<>();
 
+    ArrayList<String> addNames = new ArrayList<>();
+
     //list to contain all items available for user to add.
     GroList itemColl = new GroList();
 
-    boolean flag = false;
+    Button doneButton;
 
     GridView gridView;
-    LinearLayout linearLayout;
+    FrameLayout frameLayout;
 
     //used for speech-to-text
     SpeechRecognizer speechRecognizer;
@@ -68,6 +71,7 @@ public class AddActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getSupportActionBar().hide();
         setContentView(R.layout.activity_add_layout);
 
         //Receiving list from MainActivity
@@ -229,23 +233,23 @@ public class AddActivity extends AppCompatActivity {
         
         // find the gridview and linearlayout in the layout
         gridView = findViewById(R.id.gridView);
-        linearLayout = findViewById(R.id.linearLayout);
+        frameLayout = findViewById(R.id.frameLayout);
         
         //this segment is needed because the framelayout is not drawn on the screen yet,
         // so we need to wait until it is drawn to get the height,
         // which will be used to set the height of the gridview items
         //https://stackoverflow.com/questions/18861585/get-content-view-size-in-oncreate
-        // set up a global layout listener to wait until the linearlayout
+        // set up a global layout listener to wait until the framelayout
         // (which contains the gridview) is drawn on the screen
-        linearLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+        frameLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
                 // remove the listener to avoid multiple calls for EVERY layout pass
-                linearLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                frameLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
 
                 // now we can get the height for the drawn gridview
                 int height = gridView.getHeight();
-                Log.i("MYDEBUG", "LinearLayout height: " + linearLayout.getHeight());
+                Log.i("MYDEBUG", "FrameLayout height: " + frameLayout.getHeight());
                 Log.i("MYDEBUG", "GridView height: " + gridView.getHeight());
 
                 // create the adapter for the gridview send the height of the gridview to the adapter
@@ -268,19 +272,15 @@ public class AddActivity extends AppCompatActivity {
                         if (result.getResultCode() == Activity.RESULT_OK) {
                             Intent data = result.getData();
                             String item = data.getStringExtra("item");
-                            Bundle b = new Bundle();
-                            b.putString("item", item);
-                            Intent resultIntent = new Intent(getApplicationContext(), MainActivity.class);
-                            resultIntent.putExtras(b);
-                            setResult(Activity.RESULT_OK, resultIntent);
-                            finish();
+                            addNames.add(item);
                         }
                     }
                 });
 
-        //initialize Button and EditText
+        //initialize Buttons and EditText
         searchButton = findViewById(R.id.search_button);
         searchText = findViewById(R.id.searchbar);
+        doneButton = findViewById(R.id.done_button);
 
         //to store items searched with voice-to-text
         voiceResults = new ArrayList<>();
@@ -367,6 +367,24 @@ public class AddActivity extends AppCompatActivity {
                     return true;
                 }
                 return false;
+            }
+        });
+
+        doneButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                if(addNames == null){
+                    finish();
+                }
+                Bundle b = new Bundle();
+                b.putStringArrayList("items", addNames);
+                Intent resultIntent = new Intent(getApplicationContext(), MainActivity.class);
+                for(int i = 0; i <= addNames.size() -1; i++){
+                    Log.i("MYDEBUG", addNames.get(i));
+                }
+                resultIntent.putExtras(b);
+                setResult(Activity.RESULT_OK, resultIntent);
+                finish();
             }
         });
 
@@ -465,31 +483,7 @@ public class AddActivity extends AppCompatActivity {
     //On click of item in gridView, item is bundled and sent to grocery list in MainActivity
     // Fixed: quantity increased when add item
     public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-            //        for (int i = 0; i <= listnames.size() - 1; i++) {
-            //            //Checks if selected item is already in the grocery list.
-            //            if (listnames.get(i).equals(itemColl.getItemAtIndex(position).getName())) {
-            //                flag = true;
-            //                break;
-            //            }
-            //            else{
-            //                flag = false;
-            //                Log.i("MYDEBUG",  itemColl.getItemAtIndex(position).getName());
-            //                Log.i("MYDEBUG",  listnames.get(i));
-            //            }
-            //        }
-            //        if (flag == false){
-
-          if(!listnames.contains(itemColl.getItemAtIndex(position).getName())){
-              listnames.add(itemColl.getItemAtIndex(position).getName());
-          }
-            // return to MainActivity with selected item
-        Bundle b = new Bundle();
-        b.putString("item", itemColl.getItemAtIndex(position).getName());
-        Intent resultIntent = new Intent(getApplicationContext(), MainActivity.class);
-        resultIntent.putExtras(b);
-        Log.i("MYDEBUG", itemColl.getItemAtIndex(position).getName());
-        setResult(Activity.RESULT_OK, resultIntent);
-        finish();
+        addNames.add(itemColl.getItemAtIndex(position).getName());
     }
 
     @Override
