@@ -21,6 +21,7 @@ import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.GridView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.grocerylist.model.GroList;
@@ -34,7 +35,7 @@ import java.util.Locale;
 //allows us to use new android features on older devices (extends fragment activity too)
 //might be removed in the future
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
-    
+
     //used to store the grocery list, will store items and their corresponding image file which will be displayed in the gridview
     GroList groList;
 
@@ -79,32 +80,38 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         // find the gridview and framelayout in the layout
         GridView gridView = findViewById(R.id.gridView);
         FrameLayout frameLayout = findViewById(R.id.frameLayout);
+        TextView listEmpty = findViewById(R.id.list_empty);
+        listEmpty.setVisibility(View.INVISIBLE);
 
-                //this segment is needed because the framelayout is not drawn on the screen yet,
-                // so we need to wait until it is drawn to get the height,
-                // which will be used to set the height of the gridview items
-                //https://stackoverflow.com/questions/18861585/get-content-view-size-in-oncreate
-                // set up a global layout listener to wait until the linearlayout
-                // (which contains the gridview) is drawn on the screen
-                frameLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                    @Override
-                    public void onGlobalLayout() {
-                        // remove the listener to avoid multiple calls for EVERY layout pass
-                        frameLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+        if(groList.length() == 0){
+            listEmpty.setVisibility(View.VISIBLE);
+        }
 
-                        // now we can get the height for the drawn gridview
-                        int height = gridView.getHeight();
-                        Log.i("MYDEBUG", "LinearLayout height: " + frameLayout.getHeight());
-                        Log.i("MYDEBUG", "GridView height: " + gridView.getHeight());
+        //this segment is needed because the framelayout is not drawn on the screen yet,
+        // so we need to wait until it is drawn to get the height,
+        // which will be used to set the height of the gridview items
+        //https://stackoverflow.com/questions/18861585/get-content-view-size-in-oncreate
+        // set up a global layout listener to wait until the linearlayout
+        // (which contains the gridview) is drawn on the screen
+        frameLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                // remove the listener to avoid multiple calls for EVERY layout pass
+                frameLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
 
-                        // create the adapter for the gridview send the height of the gridview to the adapter
-                        GroListAdapter adapter = new GroListAdapter(MainActivity.this, groList, height);
-                        // set the adapter for the gridview
-                        gridView.setAdapter(adapter);
+                // now we can get the height for the drawn gridview
+                int height = gridView.getHeight();
+                Log.i("MYDEBUG", "LinearLayout height: " + frameLayout.getHeight());
+                Log.i("MYDEBUG", "GridView height: " + gridView.getHeight());
 
-                        Log.i("MYDEBUG", adapter.getItem(0).getName());
-                    }
-                });
+                // create the adapter for the gridview send the height of the gridview to the adapter
+                GroListAdapter adapter = new GroListAdapter(MainActivity.this, groList, height);
+                // set the adapter for the gridview
+                gridView.setAdapter(adapter);
+
+                Log.i("MYDEBUG", adapter.getItem(0).getName());
+            }
+        });
 
         gridView.setOnItemClickListener(this::onItemClick);
 
@@ -188,6 +195,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                             int height = gridView.getHeight();
                             GroListAdapter adapter = new GroListAdapter(MainActivity.this, groList, height);
                             gridView.setAdapter(adapter);
+                            if(groList.length() == 0){
+                                listEmpty.setVisibility(View.VISIBLE);
+                            }
                         }
                     }
                 });
@@ -302,4 +312,3 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
     }
 }
-
