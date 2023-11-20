@@ -15,7 +15,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
         android:src="@drawable/ic_add_item"
-        android:onClick="addClick"
         app:fabSize="normal"
         android:layout_margin="16dp" />
 
