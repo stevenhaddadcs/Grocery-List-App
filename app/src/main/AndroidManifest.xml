@@ -38,6 +38,11 @@
             android:exported="false"
             android:screenOrientation="portrait" />
 
+        <activity
+            android:name=".ResultActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
     </application>
 
     <queries>

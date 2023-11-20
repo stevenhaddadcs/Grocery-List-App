@@ -15,10 +15,10 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.GridView;
-import android.widget.TextView;
 import android.widget.Toast;
 import android.Manifest;
 
@@ -57,8 +57,10 @@ public class AddActivity extends AppCompatActivity {
     Intent iSpeechRecognizer;
     ArrayList<String> voiceResults;
     ArrayList<String> storeSearchResult;
-    ImageView searchButton;
+    ImageButton searchButton;
     EditText searchText;
+
+    ActivityResultLauncher<Intent> launcher;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -254,6 +256,24 @@ public class AddActivity extends AppCompatActivity {
         //onItemClick() is invoked.
         gridView.setOnItemClickListener(this::onItemClick);
 
+        launcher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override
+                    public void onActivityResult(ActivityResult result) {
+                        if (result.getResultCode() == Activity.RESULT_OK) {
+                            Intent data = result.getData();
+                            String item = data.getStringExtra("item");
+                            Bundle b = new Bundle();
+                            b.putString("item", item);
+                            Intent resultIntent = new Intent(getApplicationContext(), MainActivity.class);
+                            resultIntent.putExtras(b);
+                            setResult(Activity.RESULT_OK, resultIntent);
+                            finish();
+                        }
+                    }
+                });
+
         //initialize button
         searchButton = findViewById(R.id.search_button);
 
@@ -344,9 +364,9 @@ public class AddActivity extends AppCompatActivity {
     //TODO: need to fix later. for now it effectively show the searched items but only if we select the EditText (searchtext) and clean up the duplicated code
     private void searchItems(){
         storeSearchResult = new ArrayList<>();
-        ArrayList<GroItem> g = new ArrayList<>();
-        GroItemMap map = new GroItemMap();
-        GroList newItemColl;
+//        ArrayList<GroItem> g = new ArrayList<>();
+//        GroItemMap map = new GroItemMap();
+//        GroList newItemColl;
 
         if(voiceResults != null && itemColl != null){
             for(String s : voiceResults){
@@ -369,32 +389,35 @@ public class AddActivity extends AppCompatActivity {
         }else{
             for(String i : storeSearchResult){
                 Log.i("MYDEBUG", "Search item: " + i);
-                g.add(new GroItem(i, map.getImageName(i)));
+//                g.add(new GroItem(i, map.getImageName(i)));
             }
-            newItemColl = new GroList(g);
-            searchText.setHint("Items found: " + storeSearchResult.size());
+//            newItemColl = new GroList(g);
 
-            linearLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                @Override
-                public void onGlobalLayout() {
-                    // remove the listener to avoid multiple calls for EVERY layout pass
-                    linearLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            if(storeSearchResult.size() <= 1){
+                searchText.setHint("Item found: " + storeSearchResult.size());
+            }else{
+                searchText.setHint("Items found: " + storeSearchResult.size());
+            }
 
-                    // now we can get the height for the drawn gridview
-                    int height = gridView.getHeight();
-                    Log.i("MYDEBUG", "LinearLayout height: " + linearLayout.getHeight());
-                    Log.i("MYDEBUG", "GridView height: " + gridView.getHeight());
-
-                    // create the adapter for the gridview send the height of the gridview to the adapter
-                    GroListAdapter adapter = new GroListAdapter(AddActivity.this, newItemColl, height);
-                    // set the adapter for the gridview
-                    gridView.setAdapter(adapter);
-                }
-            });
-            //When item is selected, OnClickListener is triggered.
-            //onItemClick() is invoked.
-            gridView.setOnItemClickListener(this::onItemClick);
+           getResult(storeSearchResult);
         }
+    }
+
+    private void getResult(ArrayList<String> result) {
+//        Bundle b = new Bundle();
+//        b.putStringArrayList("result", result);
+//        b.putStringArrayList("listnames", listnames);
+//
+//        // start activity
+//        Intent i = new Intent(getApplicationContext(), ResultActivity.class);
+//        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); //all of the other activities on top of it will be closed
+//        i.putExtras(b);
+//        startActivity(i);
+//        finish();
+
+        Intent myIntent = new Intent(getApplicationContext(), ResultActivity.class);
+        myIntent.putStringArrayListExtra("result", result);
+        launcher.launch(myIntent);
     }
 
     /*
@@ -428,21 +451,21 @@ public class AddActivity extends AppCompatActivity {
 
 
     //On click of item in gridView, item is bundled and sent to grocery list in MainActivity
-    //(As long as item is not already on the grocery list)
+    // Fixed: quantity increased when add item
     public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-//        for (int i = 0; i <= listnames.size() - 1; i++) {
-//            //Checks if selected item is already in the grocery list.
-//            if (listnames.get(i).equals(itemColl.getItemAtIndex(position).getName())) {
-//                flag = true;
-//                break;
-//            }
-//            else{
-//                flag = false;
-//                Log.i("MYDEBUG",  itemColl.getItemAtIndex(position).getName());
-//                Log.i("MYDEBUG",  listnames.get(i));
-//            }
-//        }
-//        if (flag == false){
+            //        for (int i = 0; i <= listnames.size() - 1; i++) {
+            //            //Checks if selected item is already in the grocery list.
+            //            if (listnames.get(i).equals(itemColl.getItemAtIndex(position).getName())) {
+            //                flag = true;
+            //                break;
+            //            }
+            //            else{
+            //                flag = false;
+            //                Log.i("MYDEBUG",  itemColl.getItemAtIndex(position).getName());
+            //                Log.i("MYDEBUG",  listnames.get(i));
+            //            }
+            //        }
+            //        if (flag == false){
 
           if(!listnames.contains(itemColl.getItemAtIndex(position).getName())){
               listnames.add(itemColl.getItemAtIndex(position).getName());
@@ -455,10 +478,10 @@ public class AddActivity extends AppCompatActivity {
             Log.i("MYDEBUG", itemColl.getItemAtIndex(position).getName());
             setResult(Activity.RESULT_OK, resultIntent);
             finish();
-//        }
-//        else{
-//            flag = false;
-//        }
+            //        }
+            //        else{
+            //            flag = false;
+            //        }
     }
 
     @Override
