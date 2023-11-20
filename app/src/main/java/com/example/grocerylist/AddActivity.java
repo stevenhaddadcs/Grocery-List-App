@@ -14,6 +14,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.GridView;
@@ -47,6 +48,9 @@ public class AddActivity extends AppCompatActivity {
 
     boolean flag = false;
 
+    GridView gridView;
+    LinearLayout linearLayout;
+
     //used for speech-to-text
     SpeechRecognizer speechRecognizer;
     RecognitionListener r;
@@ -54,6 +58,7 @@ public class AddActivity extends AppCompatActivity {
     ArrayList<String> voiceResults;
     ArrayList<String> storeSearchResult;
     ImageView searchButton;
+    EditText searchText;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -219,8 +224,8 @@ public class AddActivity extends AppCompatActivity {
         itemColl = new GroList(g);        //create a list of all available items
         
         // find the gridview and linearlayout in the layout
-        GridView gridView = findViewById(R.id.gridView);
-        LinearLayout linearLayout = findViewById(R.id.linearLayout);
+        gridView = findViewById(R.id.gridView);
+        linearLayout = findViewById(R.id.linearLayout);
         
         //this segment is needed because the framelayout is not drawn on the screen yet,
         // so we need to wait until it is drawn to get the height,
@@ -251,6 +256,8 @@ public class AddActivity extends AppCompatActivity {
 
         //initialize button
         searchButton = findViewById(R.id.search_button);
+
+        searchText = findViewById(R.id.searchbar);
 
         //to store items searched with voice-to-text
         voiceResults = new ArrayList<>();
@@ -334,8 +341,12 @@ public class AddActivity extends AppCompatActivity {
     /*
         try to match the 5 results generated from speech recognition with itemColl that contains all the items that is available for the user to add
      */
+    //TODO: need to fix later. for now it effectively show the searched items but only if we select the EditText (searchtext) and clean up the duplicated code
     private void searchItems(){
         storeSearchResult = new ArrayList<>();
+        ArrayList<GroItem> g = new ArrayList<>();
+        GroItemMap map = new GroItemMap();
+        GroList newItemColl;
 
         if(voiceResults != null && itemColl != null){
             for(String s : voiceResults){
@@ -354,17 +365,41 @@ public class AddActivity extends AppCompatActivity {
 
         if(storeSearchResult.isEmpty()){
             Log.i("MYDEBUG", "Item not found ");
-
+            searchText.setHint("Item not found");
         }else{
             for(String i : storeSearchResult){
                 Log.i("MYDEBUG", "Search item: " + i);
+                g.add(new GroItem(i, map.getImageName(i)));
             }
+            newItemColl = new GroList(g);
+            searchText.setHint("Items found: " + storeSearchResult.size());
+
+            linearLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    // remove the listener to avoid multiple calls for EVERY layout pass
+                    linearLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+
+                    // now we can get the height for the drawn gridview
+                    int height = gridView.getHeight();
+                    Log.i("MYDEBUG", "LinearLayout height: " + linearLayout.getHeight());
+                    Log.i("MYDEBUG", "GridView height: " + gridView.getHeight());
+
+                    // create the adapter for the gridview send the height of the gridview to the adapter
+                    GroListAdapter adapter = new GroListAdapter(AddActivity.this, newItemColl, height);
+                    // set the adapter for the gridview
+                    gridView.setAdapter(adapter);
+                }
+            });
+            //When item is selected, OnClickListener is triggered.
+            //onItemClick() is invoked.
+            gridView.setOnItemClickListener(this::onItemClick);
         }
     }
 
     /*
-        request for permissions to record audio
-     */
+            request for permissions to record audio
+         */
     private void checkAudioPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.RECORD_AUDIO},1);
