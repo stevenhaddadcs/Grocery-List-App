@@ -430,19 +430,23 @@ public class AddActivity extends AppCompatActivity {
     //On click of item in gridView, item is bundled and sent to grocery list in MainActivity
     //(As long as item is not already on the grocery list)
     public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-        for (int i = 0; i <= listnames.size() - 1; i++) {
-            //Checks if selected item is already in the grocery list.
-            if (listnames.get(i).equals(itemColl.getItemAtIndex(position).getName())) {
-                flag = true;
-                break;
-            }
-            else{
-                flag = false;
-                Log.i("MYDEBUG",  itemColl.getItemAtIndex(position).getName());
-                Log.i("MYDEBUG",  listnames.get(i));
-            }
-        }
-        if (flag == false){
+//        for (int i = 0; i <= listnames.size() - 1; i++) {
+//            //Checks if selected item is already in the grocery list.
+//            if (listnames.get(i).equals(itemColl.getItemAtIndex(position).getName())) {
+//                flag = true;
+//                break;
+//            }
+//            else{
+//                flag = false;
+//                Log.i("MYDEBUG",  itemColl.getItemAtIndex(position).getName());
+//                Log.i("MYDEBUG",  listnames.get(i));
+//            }
+//        }
+//        if (flag == false){
+
+          if(!listnames.contains(itemColl.getItemAtIndex(position).getName())){
+              listnames.add(itemColl.getItemAtIndex(position).getName());
+          }
             // return to MainActivity with selected item
             Bundle b = new Bundle();
             b.putString("item", itemColl.getItemAtIndex(position).getName());
@@ -451,10 +455,10 @@ public class AddActivity extends AppCompatActivity {
             Log.i("MYDEBUG", itemColl.getItemAtIndex(position).getName());
             setResult(Activity.RESULT_OK, resultIntent);
             finish();
-        }
-        else{
-            flag = false;
-        }
+//        }
+//        else{
+//            flag = false;
+//        }
     }
 
     @Override

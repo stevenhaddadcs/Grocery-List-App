@@ -112,9 +112,19 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                         if (result.getResultCode() == Activity.RESULT_OK) {
                             Intent data = result.getData();
                             String item = data.getStringExtra("item");
+                            boolean flag = false;
                             //replaced g.add(new GroItem(item, map.getImageName(item))); with this
-                            groList.addItem(new GroItem(item, map.getImageName(item)));
-                            listNames.add(item);
+                            for(GroItem i: groList.getItems()){
+                                if(i.getName().equals(item)){
+                                    i.incrementQuantity();
+                                    flag = true;
+                                }
+                            }
+
+                            if(!flag){
+                                groList.addItem(new GroItem(item, map.getImageName(item)));
+                                listNames.add(item);
+                            }
 
                             //For adding new item image onto grocery list.
                             int height = gridView.getHeight();
