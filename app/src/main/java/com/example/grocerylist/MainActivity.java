@@ -104,29 +104,35 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 new ActivityResultCallback<ActivityResult>() {
                     @Override
                     public void onActivityResult(ActivityResult result) {
+                        //checks to see if returned results are val
                         if (result.getResultCode() == Activity.RESULT_OK) {
                             Intent data = result.getData();
-                            String item = data.getStringExtra("item");
-                            boolean flag = false;
-                            //replaced g.add(new GroItem(item, map.getImageName(item))); with this
-                            for(GroItem i: groList.getItems()){
-                                if(i.getName().equals(item)){
-                                    i.incrementQuantity();
-                                    flag = true;
+                            //Transfers received arraylist into addNames
+                            ArrayList<String> addNames = data.getStringArrayListExtra("items");
+                            boolean flag;
+                            //iterates through addNames to check if item(s) are already in the current grocery list
+                            for(int i = 0; i <= addNames.size() -1; i++) {
+                                flag = false;
+                                //if item is already in the grocery list, increments the quantity of item
+                                for (GroItem j : groList.getItems()) {
+                                    if (j.getName().equals(addNames.get(i))) {
+                                        j.incrementQuantity();
+                                        flag = true;
+                                    }
+                                }
+                                //if item is new, adds to grocery list.
+                                if (!flag) {
+                                    groList.addItem(new GroItem(addNames.get(i), map.getImageName(addNames.get(i))));
+                                    listNames.add(addNames.get(i));
+                                    flag = false;
                                 }
                             }
-
-                            if(!flag){
-                                groList.addItem(new GroItem(item, map.getImageName(item)));
-                                listNames.add(item);
-                            }
-
                             //For adding new item image onto grocery list.
                             int height = gridView.getHeight();
                             GroListAdapter adapter = new GroListAdapter(MainActivity.this, groList, height);
                             gridView.setAdapter(adapter);
-
-                            Log.i("MYDEBUG", item + " is added!");
+                            //updated current grocery list
+                            Log.i("MYDEBUG", "Current Grocery List:");
                             for (int i = 0; i <= groList.length() - 1; i++) {
                                 Log.i("MYDEBUG", groList.getItemAtIndex(i).getName());
                             }
