@@ -484,6 +484,7 @@ public class AddActivity extends AppCompatActivity {
     // Fixed: quantity increased when add item
     public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
         addNames.add(itemColl.getItemAtIndex(position).getName());
+        v.setBackgroundColor(Color.GRAY);
     }
 
     @Override
