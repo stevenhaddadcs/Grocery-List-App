@@ -43,6 +43,11 @@
             android:exported="false"
             android:screenOrientation="portrait" />
 
+        <activity
+            android:name=".ItemActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
     </application>
 
     <queries>

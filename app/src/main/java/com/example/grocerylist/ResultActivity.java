@@ -21,14 +21,10 @@ import com.example.grocerylist.model.GroList;
 import java.util.ArrayList;
 
 public class ResultActivity extends AppCompatActivity {
-    ArrayList<String> resultList;
-    ArrayList<String> listnames;
-
-    GroList itemColl;
-    GridView gridView;
-    LinearLayout linearLayout;
-    ImageButton searchButton;
-    TextView searchText;
+    private ArrayList<String> resultList;
+    private GroList itemColl;
+    private GridView gridView;
+    private LinearLayout linearLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -16,9 +16,12 @@ import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
+import android.view.View;
 import android.view.ViewTreeObserver;
+import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.GridView;
+import android.widget.Toast;
 
 import com.example.grocerylist.model.GroList;
 import com.example.grocerylist.model.GroItem;
@@ -44,8 +47,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private TextToSpeech tts;
 
     //List of all item's names in grocery list
-    ArrayList<String> listNames = new ArrayList<>();
-    
+    private ArrayList<String> listNames = new ArrayList<>();
+
+    private ActivityResultLauncher<Intent> launcher;
+    private ActivityResultLauncher<Intent> launcher2;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,11 +101,15 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                         GroListAdapter adapter = new GroListAdapter(MainActivity.this, groList, height);
                         // set the adapter for the gridview
                         gridView.setAdapter(adapter);
+
+                        Log.i("MYDEBUG", adapter.getItem(0).getName());
                     }
                 });
 
+        gridView.setOnItemClickListener(this::onItemClick);
+
         //Receives results back and adds new item to the grocery list.
-        ActivityResultLauncher<Intent> launcher = registerForActivityResult(
+        launcher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 new ActivityResultCallback<ActivityResult>() {
                     @Override
@@ -140,6 +150,49 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     }
                 });
 
+        //receive results back and set the quantity of the item
+        //if quantity is 0, item is deleted from GroList and toast will appear
+        launcher2 = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override
+                    public void onActivityResult(ActivityResult result) {
+                        if (result.getResultCode() == Activity.RESULT_OK) {
+                            Intent data = result.getData();
+                            String name = data.getStringExtra("name");
+                            int quantity = data.getIntExtra("quantity", 0);
+                            boolean flag = false;
+                            int num = 0;
+
+                            for(GroItem i: groList.getItems()){
+                                if(i.getName().equals(name)){
+                                    if(quantity != 0){
+                                        i.setQuantity(quantity);
+                                    }else{
+                                        flag = true;
+
+                                    }
+                                }
+                            }
+
+                            if(flag){
+                                for(GroItem i:groList.getItems()) {
+                                    if (i.getName().equals(name)){
+                                        groList.removeItem(i);
+                                        Toast.makeText(MainActivity.this, "Item Deleted", Toast.LENGTH_SHORT).show();
+                                        break;
+                                    }
+                                }
+                            }
+                            //For adding new item image onto grocery list.
+                            int height = gridView.getHeight();
+                            GroListAdapter adapter = new GroListAdapter(MainActivity.this, groList, height);
+                            gridView.setAdapter(adapter);
+                        }
+                    }
+                });
+
+
         // to access device's sensor of accelerometer sensor type.
         // to register a SensorEventListener for the accelerometer sensor at a given sensor rate.
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
@@ -150,8 +203,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         currentAcceleration = SensorManager.GRAVITY_EARTH;
         previousAcceleration = SensorManager.GRAVITY_EARTH;
 
-        Log.i("MYDEBUG", "" + currentAcceleration);
-        
         tts = new TextToSpeech(MainActivity.this, new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int i) {
@@ -199,6 +250,16 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             Log.i("MYDEBUG", "Acceleration : " + difference);
             tts.speak(groList.toString(), TextToSpeech.QUEUE_FLUSH, null, null);
         }
+    }
+
+    /*
+       On click of item in MainActivity, item's name and quantity is sent to ItemActivity
+     */
+    public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+        Intent myIntent = new Intent(getApplicationContext(), ItemActivity.class);
+        myIntent.putExtra("name", groList.getItemAtIndex(position).getName());
+        myIntent.putExtra("quantity", groList.getItemAtIndex(position).getQuantity());
+        launcher2.launch(myIntent);
     }
 
     /*

@@ -57,13 +57,13 @@ public class AddActivity extends AppCompatActivity {
     FrameLayout frameLayout;
 
     //used for speech-to-text
-    SpeechRecognizer speechRecognizer;
-    RecognitionListener r;
-    Intent iSpeechRecognizer;
-    ArrayList<String> voiceResults;
-    ArrayList<String> storeSearchResult;
-    ImageButton searchButton;
-    EditText searchText;
+    private SpeechRecognizer speechRecognizer;
+    private RecognitionListener r;
+    private Intent iSpeechRecognizer;
+    private ArrayList<String> voiceResults;
+    private ArrayList<String> storeSearchResult;
+    private ImageButton searchButton;
+    private EditText searchText;
 
     ActivityResultLauncher<Intent> launcher;
 
