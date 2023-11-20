@@ -10,15 +10,17 @@ import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.GridView;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.Manifest;
 
@@ -256,6 +258,8 @@ public class AddActivity extends AppCompatActivity {
         //onItemClick() is invoked.
         gridView.setOnItemClickListener(this::onItemClick);
 
+        //Receive result back from ResultActivity class on the item selected
+        //and send it to MainActivity
         launcher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 new ActivityResultCallback<ActivityResult>() {
@@ -274,9 +278,8 @@ public class AddActivity extends AppCompatActivity {
                     }
                 });
 
-        //initialize button
+        //initialize Button and EditText
         searchButton = findViewById(R.id.search_button);
-
         searchText = findViewById(R.id.searchbar);
 
         //to store items searched with voice-to-text
@@ -335,11 +338,9 @@ public class AddActivity extends AppCompatActivity {
 
         speechRecognizer.setRecognitionListener(r);
 
-        /*
-            set on touch listener for the microphone button
-            when pressed gesture starts, speech recognizer starts listening
-            when pressed gesture finishes, speech recognizer stop listening
-        */
+        // set on touch listener for the microphone button
+        // when pressed gesture starts, speech recognizer starts listening
+        // when pressed gesture finishes, speech recognizer stop listening
         searchButton.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent e) {
@@ -351,6 +352,19 @@ public class AddActivity extends AppCompatActivity {
 
                     case MotionEvent.ACTION_DOWN:
                         speechRecognizer.startListening(iSpeechRecognizer);
+                        searchText.setHint("Listening...");
+                }
+                return false;
+            }
+        });
+
+        //called when search action is performed
+        searchText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    performSearch(v);
+                    return true;
                 }
                 return false;
             }
@@ -359,28 +373,36 @@ public class AddActivity extends AppCompatActivity {
     }
 
     /*
+    when search action is performed, a set of items that matches the name searched will be sent
+     */
+    private void performSearch(TextView v){
+        storeSearchResult = new ArrayList<>();
+
+        for(GroItem item: itemColl.getItems()){
+            if(Pattern.compile(Pattern.quote(v.getText().toString().replaceAll("[-+.^:,]"," ")), Pattern.CASE_INSENSITIVE).matcher(item.getName().replaceAll("[-+.^:,]"," ")).find()){
+                if(!storeSearchResult.contains(item.getName()))
+                    storeSearchResult.add(item.getName());
+            }
+        }
+
+        getResult(storeSearchResult);
+    }
+
+
+
+    /*
         try to match the 5 results generated from speech recognition with itemColl that contains all the items that is available for the user to add
      */
-    //TODO: need to fix later. for now it effectively show the searched items but only if we select the EditText (searchtext) and clean up the duplicated code
     private void searchItems(){
         storeSearchResult = new ArrayList<>();
-//        ArrayList<GroItem> g = new ArrayList<>();
-//        GroItemMap map = new GroItemMap();
-//        GroList newItemColl;
 
         if(voiceResults != null && itemColl != null){
             for(String s : voiceResults){
-                if(s.length() > 2){
-                    for(GroItem item: itemColl.getItems()){
-//                        String longest = voiceResults.stream().max(Comparator.comparingInt(String::length)).get();
-                        if(Pattern.compile(Pattern.quote(s.substring(0, Math.min(s.length(), 7))), Pattern.CASE_INSENSITIVE).matcher(item.getName().replaceAll("[-+.^:,]"," ")).find()){
-                            if(!storeSearchResult.contains(item.getName())){
-                                storeSearchResult.add(item.getName());
-                            }
-                        }
-                    }
-                }
-            }
+                if(s.length()>2){
+                for(GroItem item: itemColl.getItems()){
+                    if(Pattern.compile(Pattern.quote(s.substring(0, Math.min(s.length(), 7))), Pattern.CASE_INSENSITIVE).matcher(item.getName().replaceAll("[-+.^:,]"," ")).find()){
+                        if(!storeSearchResult.contains(item.getName()))
+                            storeSearchResult.add(item.getName());}}}}
         }
 
         if(storeSearchResult.isEmpty()){
@@ -389,9 +411,7 @@ public class AddActivity extends AppCompatActivity {
         }else{
             for(String i : storeSearchResult){
                 Log.i("MYDEBUG", "Search item: " + i);
-//                g.add(new GroItem(i, map.getImageName(i)));
             }
-//            newItemColl = new GroList(g);
 
             if(storeSearchResult.size() <= 1){
                 searchText.setHint("Item found: " + storeSearchResult.size());
@@ -403,30 +423,23 @@ public class AddActivity extends AppCompatActivity {
         }
     }
 
+    /*
+        Sends an arraylist of Strings with names of items that matches the search list
+        and receive from that ResultActivity class
+     */
     private void getResult(ArrayList<String> result) {
-//        Bundle b = new Bundle();
-//        b.putStringArrayList("result", result);
-//        b.putStringArrayList("listnames", listnames);
-//
-//        // start activity
-//        Intent i = new Intent(getApplicationContext(), ResultActivity.class);
-//        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); //all of the other activities on top of it will be closed
-//        i.putExtras(b);
-//        startActivity(i);
-//        finish();
-
         Intent myIntent = new Intent(getApplicationContext(), ResultActivity.class);
         myIntent.putStringArrayListExtra("result", result);
         launcher.launch(myIntent);
     }
 
     /*
-            request for permissions to record audio
-         */
+        request for permissions to record audio
+    */
     private void checkAudioPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
             ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.RECORD_AUDIO},1);
-        }
+
     }
 
     /*
@@ -440,9 +453,8 @@ public class AddActivity extends AppCompatActivity {
 
         if (requestCode == 1 && grantResults.length > 0 ) {
             for (int grantResult : grantResults) {
-                if (grantResult == PackageManager.PERMISSION_DENIED) {
+                if (grantResult == PackageManager.PERMISSION_DENIED)
                     Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show();
-                }
             }
         }
 
@@ -471,23 +483,18 @@ public class AddActivity extends AppCompatActivity {
               listnames.add(itemColl.getItemAtIndex(position).getName());
           }
             // return to MainActivity with selected item
-            Bundle b = new Bundle();
-            b.putString("item", itemColl.getItemAtIndex(position).getName());
-            Intent resultIntent = new Intent(getApplicationContext(), MainActivity.class);
-            resultIntent.putExtras(b);
-            Log.i("MYDEBUG", itemColl.getItemAtIndex(position).getName());
-            setResult(Activity.RESULT_OK, resultIntent);
-            finish();
-            //        }
-            //        else{
-            //            flag = false;
-            //        }
+        Bundle b = new Bundle();
+        b.putString("item", itemColl.getItemAtIndex(position).getName());
+        Intent resultIntent = new Intent(getApplicationContext(), MainActivity.class);
+        resultIntent.putExtras(b);
+        Log.i("MYDEBUG", itemColl.getItemAtIndex(position).getName());
+        setResult(Activity.RESULT_OK, resultIntent);
+        finish();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-
         speechRecognizer.setRecognitionListener(r);
     }
 

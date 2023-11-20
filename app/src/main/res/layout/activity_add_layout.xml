@@ -21,7 +21,9 @@
             android:id="@+id/searchbar"
             android:layout_toLeftOf="@id/search_button"
             android:padding="10dp"
-            android:hint="Search..." />
+            android:hint="Search..."
+            android:imeOptions="actionSearch"
+            android:inputType="text"/>
 
         <ImageButton
             android:id="@+id/search_button"

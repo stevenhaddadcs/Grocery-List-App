@@ -13,22 +13,17 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
-import android.view.View;
 import android.view.ViewTreeObserver;
-import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.GridView;
-import android.widget.ImageView;
 
 import com.example.grocerylist.model.GroList;
 import com.example.grocerylist.model.GroItem;
 import com.example.grocerylist.model.GroItemMap;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Locale;
 

@@ -12,10 +12,6 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.grocerylist.model.GroItem;
@@ -39,16 +35,12 @@ public class ResultActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Log.i("MYDEBUG", "onCreate ResultActivity");
         setContentView(R.layout.activity_result_layout);
-//        searchButton = findViewById(R.id.search_button);
-        searchText = findViewById(R.id.search_result);
 
-
-
-//        Bundle b = getIntent().getExtras();
-//        resultList = b.getStringArrayList("result");
+        // receive a string array of the names of the items searched
         Intent intent = getIntent();
         resultList = intent.getStringArrayListExtra("result");
 
+        // add the names of the items into GroList
         ArrayList<GroItem> g = new ArrayList<>();
         GroItemMap map = new GroItemMap();
         if(resultList != null && resultList.size() != 0){
@@ -57,12 +49,6 @@ public class ResultActivity extends AppCompatActivity {
             }
         }
         itemColl = new GroList(g);        //create a list of all available items
-
-        if(g.size()<=1){
-            searchText.setText("Item found: " + g.size());
-        }else{
-            searchText.setText("Items found: " + g.size());
-        }
 
         // find the gridview and linearlayout in the layout
         gridView = findViewById(R.id.gridView);
@@ -98,7 +84,7 @@ public class ResultActivity extends AppCompatActivity {
     }
 
     public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-        // return to MainActivity with selected item
+        // return to AddActivity class with selected item
         Bundle b = new Bundle();
         b.putString("item", itemColl.getItemAtIndex(position).getName());
         Intent i = new Intent(getApplicationContext(), AddActivity.class);
