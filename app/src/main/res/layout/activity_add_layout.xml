@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/linearLayout"
+    android:id="@+id/frameLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".AddActivity">
-
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -33,12 +32,24 @@
             android:src="@drawable/mic" />
     </RelativeLayout>
 
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/done_button"
+        android:contentDescription="Click to add items to list"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center|bottom"
+        android:text="Add"
+        android:textSize="20dp"
+        android:textAlignment="center"
+        app:fabSize="normal"
+        android:layout_margin="16dp" />
 
     <GridView
         android:id="@+id/gridView"
+        android:layout_marginTop="40dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:horizontalSpacing="10dp"
         android:numColumns="2"
         android:verticalSpacing="0dp" />
-</LinearLayout>
+</FrameLayout>
