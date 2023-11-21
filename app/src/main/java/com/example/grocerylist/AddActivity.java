@@ -52,6 +52,8 @@ public class AddActivity extends AppCompatActivity {
     //list to contain all items available for user to add.
     GroList itemColl = new GroList();
 
+    GroListAdapter adapter;
+
     Button doneButton;
 
     GridView gridView;
@@ -231,6 +233,10 @@ public class AddActivity extends AppCompatActivity {
 
         //instantiate the collection list
         itemColl = new GroList(g);        //create a list of all available items
+
+        for(GroItem i: itemColl.getItems()){
+            i.setQuantity(0);
+        }
         
         // find the gridview and linearlayout in the layout
         gridView = findViewById(R.id.gridView);
@@ -254,7 +260,7 @@ public class AddActivity extends AppCompatActivity {
                 Log.i("MYDEBUG", "GridView height: " + gridView.getHeight());
 
                 // create the adapter for the gridview send the height of the gridview to the adapter
-                GroListAdapter adapter = new GroListAdapter(AddActivity.this, itemColl, height);
+                adapter = new GroListAdapter(AddActivity.this, itemColl, height);
                 // set the adapter for the gridview
                 gridView.setAdapter(adapter);
             }
@@ -488,7 +494,10 @@ public class AddActivity extends AppCompatActivity {
     // Fixed: quantity increased when add item
     public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
         addNames.add(itemColl.getItemAtIndex(position).getName());
+        itemColl.getItemAtIndex(position).incrementQuantity();
         v.setBackgroundColor(Color.GRAY);
+        adapter.setItems(itemColl);
+        gridView.setAdapter(adapter);
     }
 
     @Override

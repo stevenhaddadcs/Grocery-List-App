@@ -43,6 +43,11 @@ public class GroListAdapter extends BaseAdapter {
         return i;
     }
 
+
+    public void setItems(GroList items) {
+        this.items = items;
+    }
+
     //changed name to itemView from convertView
     @Override
     public View getView(int i, View itemView, ViewGroup parent) {
