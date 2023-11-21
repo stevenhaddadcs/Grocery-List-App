@@ -348,6 +348,9 @@ public class AddActivity extends AppCompatActivity {
                 switch(e.getAction()){
                     case MotionEvent.ACTION_UP:
                         speechRecognizer.stopListening();
+                        for(String i: voiceResults){
+                            Log.i("MYDEBUG", i);
+                        }
                         searchItems();
                         break;
 
