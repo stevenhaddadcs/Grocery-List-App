@@ -496,8 +496,8 @@ public class AddActivity extends AppCompatActivity {
         addNames.add(itemColl.getItemAtIndex(position).getName());
         itemColl.getItemAtIndex(position).incrementQuantity();
         v.setBackgroundColor(Color.GRAY);
-        adapter.setItems(itemColl);
-        gridView.setAdapter(adapter);
+        //adapter.setItems(itemColl);
+        //gridView.setAdapter(adapter);
     }
 
     @Override
