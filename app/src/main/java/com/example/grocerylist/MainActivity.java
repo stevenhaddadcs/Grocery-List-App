@@ -62,6 +62,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     private GridView gridView;
 
+    private TextView listEmpty;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,7 +94,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         // find the gridview and framelayout in the layout
         gridView = findViewById(R.id.gridView);
         FrameLayout frameLayout = findViewById(R.id.frameLayout);
-        TextView listEmpty = findViewById(R.id.list_empty);
+        listEmpty = findViewById(R.id.list_empty);
         listEmpty.setVisibility(View.INVISIBLE);
 
         if(groList.length() == 0){
@@ -323,6 +325,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     int height = gridView.getHeight();
                     GroListAdapter adapter = new GroListAdapter(MainActivity.this, groList, height);
                     gridView.setAdapter(adapter);
+                    listEmpty.setVisibility(View.VISIBLE);
                 } )
                 .setNegativeButton("cancel", (dialog, which) -> {} )
                 .create();
