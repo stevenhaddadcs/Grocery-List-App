@@ -141,6 +141,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                             //Transfers received arraylist into addNames
                             ArrayList<String> addNames = data.getStringArrayListExtra("items");
                             boolean flag;
+
+                            if(groList.length() == 0){
+                                listEmpty.setVisibility(View.INVISIBLE);
+                            }
                             //iterates through addNames to check if item(s) are already in the current grocery list
                             for(int i = 0; i <= addNames.size() -1; i++) {
                                 flag = false;
