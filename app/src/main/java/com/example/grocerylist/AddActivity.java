@@ -238,6 +238,11 @@ public class AddActivity extends AppCompatActivity {
         // find the gridview and linearlayout in the layout
         gridView = findViewById(R.id.gridView);
         frameLayout = findViewById(R.id.frameLayout);
+
+        //initialize Buttons and EditText
+        searchButton = findViewById(R.id.search_button);
+        searchText = findViewById(R.id.searchbar);
+        doneButton = findViewById(R.id.done_button);
         
         //this segment is needed because the framelayout is not drawn on the screen yet,
         // so we need to wait until it is drawn to get the height,
@@ -274,6 +279,7 @@ public class AddActivity extends AppCompatActivity {
                     @Override
                     public void onActivityResult(ActivityResult result) {
                         if (result.getResultCode() == Activity.RESULT_OK) {
+                            searchText.setHint("Search...");
                             Intent data = result.getData();
                             String item = data.getStringExtra("item");
                             addNames.add(item);
@@ -281,20 +287,53 @@ public class AddActivity extends AppCompatActivity {
                     }
                 });
 
-        //initialize Buttons and EditText
-        searchButton = findViewById(R.id.search_button);
-        searchText = findViewById(R.id.searchbar);
-        doneButton = findViewById(R.id.done_button);
 
-        //to store items searched with voice-to-text
-        voiceResults = new ArrayList<>();
 
+        speechToText();
+
+        //called when search action is performed
+        searchText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    performSearch(v);
+                    return true;
+                }
+                return false;
+            }
+        });
+
+        doneButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                if(addNames == null){
+                    finish();
+                }
+                Bundle b = new Bundle();
+                b.putStringArrayList("items", addNames);
+                Intent resultIntent = new Intent(getApplicationContext(), MainActivity.class);
+                for(int i = 0; i <= addNames.size() -1; i++){
+                    Log.i("MYDEBUG", addNames.get(i));
+                }
+                resultIntent.putExtras(b);
+                setResult(Activity.RESULT_OK, resultIntent);
+                finish();
+            }
+        });
+
+    }
+
+    private void speechToText() {
         // check if the phone allow permission to access microphone
         // https://stackoverflow.com/questions/43464678/why-record-audio-is-returning-permission-granted-everytime-in-marshmallow
         if(ContextCompat.checkSelfPermission(this,Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED){
             checkAudioPermission();
         }
 
+        //to store items searched with voice-to-text
+        voiceResults = new ArrayList<>();
+
+        Log.i("MYDEBUG", "create speech recognizer");
         //create speech recognizer and recognizer intent
         speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
         iSpeechRecognizer = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
@@ -327,9 +366,12 @@ public class AddActivity extends AppCompatActivity {
 
             @Override
             public void onResults(Bundle bundle) {
+                Log.i("MYDEBUG", "onResults speech recognizer");
+
                 //get results from the speech with max number of 5
                 voiceResults = bundle.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
                 searchItems(); //search for the items found in speech-to-text
+
             }
 
             @Override
@@ -361,41 +403,11 @@ public class AddActivity extends AppCompatActivity {
                         speechRecognizer.startListening(iSpeechRecognizer);
                         searchText.setText("");
                         searchText.setHint("Listening...");
+                        break;
                 }
                 return false;
             }
         });
-
-        //called when search action is performed
-        searchText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                    performSearch(v);
-                    return true;
-                }
-                return false;
-            }
-        });
-
-        doneButton.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view) {
-                if(addNames == null){
-                    finish();
-                }
-                Bundle b = new Bundle();
-                b.putStringArrayList("items", addNames);
-                Intent resultIntent = new Intent(getApplicationContext(), MainActivity.class);
-                for(int i = 0; i <= addNames.size() -1; i++){
-                    Log.i("MYDEBUG", addNames.get(i));
-                }
-                resultIntent.putExtras(b);
-                setResult(Activity.RESULT_OK, resultIntent);
-                finish();
-            }
-        });
-
     }
 
     /*
@@ -535,14 +547,19 @@ public class AddActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        speechRecognizer.setRecognitionListener(r);
+        Log.i("MYDEBUG", "onResume AddActivity");
+        speechToText();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        Log.i("MYDEBUG", "onPause AddActivity");
+
         //destroy when not in use
         if(speechRecognizer != null){
+            Log.i("MYDEBUG", "destroy speech recognizer");
+
             speechRecognizer.destroy();
         }
     }
@@ -550,7 +567,7 @@ public class AddActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
+        Log.i("MYDEBUG", "onDestroy AddActivity");
         //destroy when not in use
         if(speechRecognizer != null){
             speechRecognizer.destroy();
