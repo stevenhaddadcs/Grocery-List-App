@@ -142,7 +142,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                                 }
                                 //if item is new, adds to grocery list.
                                 if (!flag) {
-                                    groList.addItem(new GroItem(addNames.get(i), map.getImageName(addNames.get(i))));
+                                    GroItem temp = new GroItem(addNames.get(i), map.getImageName(addNames.get(i)));
+                                    temp.incrementQuantity();
+                                    groList.addItem(temp);
                                     listNames.add(addNames.get(i));
                                     flag = false;
                                 }
