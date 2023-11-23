@@ -162,7 +162,20 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                                 if (!flag) {
                                     GroItem temp = new GroItem(addNames.get(i), map.getImageName(addNames.get(i)));
                                     temp.incrementQuantity();
+                                    ArrayList<GroItem> g = new ArrayList<>();
+                                    ArrayList<GroItem> g2 = new ArrayList<>();
+
+                                    for(GroItem it : groList.getItems()){
+                                        if(it.getChecked()){
+                                            g.add(it);
+                                        }else{
+                                            g2.add(it);
+                                        }
+                                    }
+                                    groList.clear();
+                                    groList.addItems(g2);
                                     groList.addItem(temp);
+                                    groList.addItems(g);
                                     listNames.add(addNames.get(i));
                                     flag = false;
                                 }
