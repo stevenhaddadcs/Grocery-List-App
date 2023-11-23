@@ -74,13 +74,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         //create a list of grocery items
         ArrayList<GroItem> g = new ArrayList<>();
         GroItemMap map = new GroItemMap();
-        g.add(new GroItem("Yogurt", map.getImageName("Yogurt")));
+        g.add(new GroItem("Yogurt", map.getImageName("Yogurt"),5));
         g.add(new GroItem("Bananas", map.getImageName("Bananas")));
-        g.add(new GroItem("Broccoli", map.getImageName("Broccoli")));
-        g.add(new GroItem("Carrots", map.getImageName("Carrots")));
+        g.add(new GroItem("Broccoli", map.getImageName("Broccoli"),2));
+        g.add(new GroItem("Apples", map.getImageName("Apples"),6));
         g.add(new GroItem("Cereal", map.getImageName("Cereal")));
         g.add(new GroItem("Chicken Breasts", map.getImageName("Chicken Breasts")));
-        g.add(new GroItem("Chips", map.getImageName("Chips")));
+        g.add(new GroItem("Chips", map.getImageName("Chips"),2));
 
         //Populate ArrayList with names of all items in current grocery list
         for(int i = 0; i <= g.size() - 1; i++){
