@@ -76,6 +76,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         //instantiate the grocery list
         groList = new GroList(g);
         Log.i("MYDEBUG", "Grocery List size: "+ this.groList.length());
+        for(GroItem i : groList.getItems()){
+            i.incrementQuantity();
+        }
 
         // find the gridview and framelayout in the layout
         GridView gridView = findViewById(R.id.gridView);

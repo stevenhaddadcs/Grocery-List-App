@@ -18,7 +18,7 @@ import java.util.HashMap;
             // considered using a csv file but this makes it more efficient and easier to read
             groItemMap.put("All-Purpose Cleaner", "item_all_purpose_cleaner"); //cannot include '-' in drawable file names
             groItemMap.put("Almond Milk", "item_almond_milk");
-            groItemMap.put("Aluminum Foil", "item_aluminum_foil");
+            groItemMap.put("Aluminium Foil", "item_aluminium_foil");
             groItemMap.put("Apple Juice", "item_apple_juice");
             groItemMap.put("Apples", "item_apples");
             groItemMap.put("Avocados", "item_avocados");

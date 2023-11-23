@@ -31,6 +31,7 @@ import com.example.grocerylist.model.GroItem;
 import com.example.grocerylist.model.GroItemMap;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.regex.Pattern;
 
 import androidx.activity.result.ActivityResult;
@@ -94,7 +95,7 @@ public class AddActivity extends AppCompatActivity {
         GroItemMap map = new GroItemMap();
         g.add(new GroItem("All-Purpose Cleaner", map.getImageName("All-Purpose Cleaner")));
         g.add(new GroItem("Almond Milk", map.getImageName("Almond Milk")));
-        g.add(new GroItem("Aluminum Foil", map.getImageName("Aluminum Foil")));
+        g.add(new GroItem("Aluminium Foil", map.getImageName("Aluminium Foil")));
         g.add(new GroItem("Apple Juice", map.getImageName("Apple Juice")));
         g.add(new GroItem("Apples", map.getImageName("Apples")));
         g.add(new GroItem("Avocados", map.getImageName("Avocados")));
@@ -233,10 +234,6 @@ public class AddActivity extends AppCompatActivity {
 
         //instantiate the collection list
         itemColl = new GroList(g);        //create a list of all available items
-
-        for(GroItem i: itemColl.getItems()){
-            i.setQuantity(0);
-        }
         
         // find the gridview and linearlayout in the layout
         gridView = findViewById(R.id.gridView);
@@ -362,6 +359,7 @@ public class AddActivity extends AppCompatActivity {
 
                     case MotionEvent.ACTION_DOWN:
                         speechRecognizer.startListening(iSpeechRecognizer);
+                        searchText.setText("");
                         searchText.setHint("Listening...");
                 }
                 return false;
@@ -405,11 +403,49 @@ public class AddActivity extends AppCompatActivity {
      */
     private void performSearch(TextView v){
         storeSearchResult = new ArrayList<>();
+        boolean check = true;
+        int num = 0;
+        String itemName = "";
 
-        for(GroItem item: itemColl.getItems()){
-            if(Pattern.compile(Pattern.quote(v.getText().toString().replaceAll("[-+.^:,]"," ")), Pattern.CASE_INSENSITIVE).matcher(item.getName().replaceAll("[-+.^:,]"," ")).find()){
-                if(!storeSearchResult.contains(item.getName()))
+        String result = v.getText().toString().replaceAll("[-+.^:,]"," ").trim();
+
+        if(!result.isEmpty()){
+            for(GroItem item: itemColl.getItems()){
+                itemName = item.getName().replaceAll("[-+.^:,]"," ");
+                check = true;
+
+                for(int i = 0; check && i < result.length(); i++){
+                    if(!(itemName.charAt(i) + "").equalsIgnoreCase(result.charAt(i)+""))
+                        check = false;
+                }
+
+                if( check && !storeSearchResult.contains(item.getName()))
                     storeSearchResult.add(item.getName());
+            }
+        }else {
+            for (GroItem item : itemColl.getItems()) {
+                itemName = item.getName().replaceAll("[-+.^:,]"," ").trim();
+                String[] word = itemName.split("\\s+");
+                check = true;
+                num = 0;
+
+                for(int j = 0 ; j < word.length; j++){
+                    check = result.length() <= word[j].length();
+                    for(int i = 0; check && i < result.length(); i++) {
+                        num = i;
+                        Log.i("MYDEBUG", word[j].charAt(i) + "==" + result.charAt(i) + " and " + (word[j].charAt(i) + "").equalsIgnoreCase(result.charAt(i) + "") );
+
+                        if (!(word[j].charAt(i) + "").equalsIgnoreCase(result.charAt(i) + "")){
+                            Log.i("MYDEBUG", i + "");
+                            check = false;
+                        }
+                    }
+                    if(check && num == result.length()-1)
+                        break;
+                }
+                if(check && !storeSearchResult.contains(item.getName()))
+                    storeSearchResult.add(item.getName());
+
             }
         }
 

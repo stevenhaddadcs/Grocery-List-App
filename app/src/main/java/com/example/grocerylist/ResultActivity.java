@@ -31,6 +31,7 @@ public class ResultActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Log.i("MYDEBUG", "onCreate ResultActivity");
         setContentView(R.layout.activity_result_layout);
+        TextView resultText = findViewById(R.id.resultText);
 
         // receive a string array of the names of the items searched
         Intent intent = getIntent();
@@ -44,39 +45,45 @@ public class ResultActivity extends AppCompatActivity {
                 g.add(new GroItem(i, map.getImageName(i)));
             }
         }
-        itemColl = new GroList(g);        //create a list of all available items
-
         // find the gridview and linearlayout in the layout
         gridView = findViewById(R.id.gridView);
         linearLayout = findViewById(R.id.linearLayout);
 
-        //this segment is needed because the framelayout is not drawn on the screen yet,
-        // so we need to wait until it is drawn to get the height,
-        // which will be used to set the height of the gridview items
-        //https://stackoverflow.com/questions/18861585/get-content-view-size-in-oncreate
-        // set up a global layout listener to wait until the linearlayout
-        // (which contains the gridview) is drawn on the screen
-        linearLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                // remove the listener to avoid multiple calls for EVERY layout pass
-                linearLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+        if(g == null || g.isEmpty()){
+            resultText.setText("Item not found");
+        }else{
+            resultText.setText("Item found: " + g.size());
 
-                // now we can get the height for the drawn gridview
-                int height = gridView.getHeight();
-                Log.i("MYDEBUG", "LinearLayout height: " + linearLayout.getHeight());
-                Log.i("MYDEBUG", "GridView height: " + gridView.getHeight());
+            itemColl = new GroList(g);        //create a list of all available items
 
-                // create the adapter for the gridview send the height of the gridview to the adapter
-                GroListAdapter adapter = new GroListAdapter(ResultActivity.this, itemColl, height);
-                // set the adapter for the gridview
-                gridView.setAdapter(adapter);
-            }
-        });
+            //this segment is needed because the framelayout is not drawn on the screen yet,
+            // so we need to wait until it is drawn to get the height,
+            // which will be used to set the height of the gridview items
+            //https://stackoverflow.com/questions/18861585/get-content-view-size-in-oncreate
+            // set up a global layout listener to wait until the linearlayout
+            // (which contains the gridview) is drawn on the screen
+            linearLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    // remove the listener to avoid multiple calls for EVERY layout pass
+                    linearLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
 
-        //When item is selected, OnClickListener is triggered.
-        //onItemClick() is invoked.
-        gridView.setOnItemClickListener(this::onItemClick);
+                    // now we can get the height for the drawn gridview
+                    int height = gridView.getHeight();
+                    Log.i("MYDEBUG", "LinearLayout height: " + linearLayout.getHeight());
+                    Log.i("MYDEBUG", "GridView height: " + gridView.getHeight());
+
+                    // create the adapter for the gridview send the height of the gridview to the adapter
+                    GroListAdapter adapter = new GroListAdapter(ResultActivity.this, itemColl, height);
+                    // set the adapter for the gridview
+                    gridView.setAdapter(adapter);
+                }
+            });
+
+            //When item is selected, OnClickListener is triggered.
+            //onItemClick() is invoked.
+            gridView.setOnItemClickListener(this::onItemClick);
+        }
     }
 
     public void onItemClick(AdapterView<?> parent, View v, int position, long id) {

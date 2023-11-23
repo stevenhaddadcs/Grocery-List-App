@@ -12,7 +12,7 @@ public class GroItem {
     public GroItem(String name, String image){
         this.name = name;
         this.imageName = image;
-        this.quantity = 1;
+        this.quantity = 0;
     }
 
     //If the user specifies how many of the same item
