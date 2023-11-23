@@ -286,6 +286,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         launcher2.launch(myIntent);
     }
 
+    // setup an Options menu
+    //from Demo_Settings
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
@@ -293,6 +295,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         return true;
     }
 
+    // handle a "Clear" selection in the options menu by calling showClearAlertDialog method
+    // from Demo_Settings
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
@@ -302,14 +306,15 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 showClearAlertDialog();
 
                 return true;
-
-//            case HELP:
-//                Toast.makeText(this, "Help! (not implemented)", Toast.LENGTH_SHORT).show();
-//                return true;
         }
         return false;
     }
 
+    /*
+        using AlertDialog to set confirmation on whether to clear the items on grocery list
+        setPositiveButton to clear items
+        setNegativeButton to cancel and do nothing
+     */
     private void showClearAlertDialog() {
         AlertDialog alert = new AlertDialog.Builder(this)
                 .setTitle("Are you sure you want to clear?")
@@ -322,7 +327,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 .setNegativeButton("cancel", (dialog, which) -> {} )
                 .create();
         alert.show();
-
     }
 
     /*
