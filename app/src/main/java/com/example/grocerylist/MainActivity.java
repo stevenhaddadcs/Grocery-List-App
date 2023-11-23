@@ -7,7 +7,10 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.DialogFragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -16,6 +19,8 @@ import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
@@ -35,6 +40,8 @@ import java.util.Locale;
 //allows us to use new android features on older devices (extends fragment activity too)
 //might be removed in the future
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
+    final static int CLEAR = 0;
+
 
     //used to store the grocery list, will store items and their corresponding image file which will be displayed in the gridview
     GroList groList;
@@ -52,6 +59,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     private ActivityResultLauncher<Intent> launcher;
     private ActivityResultLauncher<Intent> launcher2;
+
+    private GridView gridView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
 
         // find the gridview and framelayout in the layout
-        GridView gridView = findViewById(R.id.gridView);
+        gridView = findViewById(R.id.gridView);
         FrameLayout frameLayout = findViewById(R.id.frameLayout);
         TextView listEmpty = findViewById(R.id.list_empty);
         listEmpty.setVisibility(View.INVISIBLE);
@@ -277,9 +286,48 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         launcher2.launch(myIntent);
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        menu.add(CLEAR, CLEAR, CLEAR, "Clear");
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        switch (item.getItemId())
+        {
+            case CLEAR:
+                showClearAlertDialog();
+
+                return true;
+
+//            case HELP:
+//                Toast.makeText(this, "Help! (not implemented)", Toast.LENGTH_SHORT).show();
+//                return true;
+        }
+        return false;
+    }
+
+    private void showClearAlertDialog() {
+        AlertDialog alert = new AlertDialog.Builder(this)
+                .setTitle("Are you sure you want to clear?")
+                .setPositiveButton("ok", (dialog, which) -> {
+                    groList.clear();
+                    int height = gridView.getHeight();
+                    GroListAdapter adapter = new GroListAdapter(MainActivity.this, groList, height);
+                    gridView.setAdapter(adapter);
+                } )
+                .setNegativeButton("cancel", (dialog, which) -> {} )
+                .create();
+        alert.show();
+
+    }
+
     /*
-        this method must be declared from SensorEventListener
-     */
+            this method must be declared from SensorEventListener
+         */
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {
 

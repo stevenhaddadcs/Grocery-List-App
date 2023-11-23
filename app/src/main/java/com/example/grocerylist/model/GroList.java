@@ -80,6 +80,10 @@ public class GroList implements Parcelable {
         return items.size();
     }
 
+    public void clear(){
+         this.items.clear();
+    }
+
     @Override
     public String toString(){
         StringBuilder text = new StringBuilder();
