@@ -433,10 +433,8 @@ public class AddActivity extends AppCompatActivity {
                     check = result.length() <= word[j].length();
                     for(int i = 0; check && i < result.length(); i++) {
                         num = i;
-                        Log.i("MYDEBUG", word[j].charAt(i) + "==" + result.charAt(i) + " and " + (word[j].charAt(i) + "").equalsIgnoreCase(result.charAt(i) + "") );
 
                         if (!(word[j].charAt(i) + "").equalsIgnoreCase(result.charAt(i) + "")){
-                            Log.i("MYDEBUG", i + "");
                             check = false;
                         }
                     }
