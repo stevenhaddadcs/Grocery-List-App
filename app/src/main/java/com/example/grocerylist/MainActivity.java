@@ -8,11 +8,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.DialogFragment;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -311,6 +308,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         launcher2.launch(myIntent);
     }
 
+    /*
+        long press item to check it
+     */
     private boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long l){
         if(groList.getItemAtIndex(position).getChecked()){
             groList.getItemAtIndex(position).setChecked(false);
