@@ -1,6 +1,7 @@
 package com.example.grocerylist;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -73,6 +74,12 @@ public class GroListAdapter extends BaseAdapter {
         //itemImageView.setImageResource(R.drawable.item_yogurt);
         itemImageView.setImageResource(drawableResourceId);
 
+        if(groItem.getChecked()){
+            itemView.setBackgroundColor(Color.GRAY);
+        }else{
+            itemView.setBackgroundColor(Color.TRANSPARENT);
+
+        }
 
         return itemView;
     }

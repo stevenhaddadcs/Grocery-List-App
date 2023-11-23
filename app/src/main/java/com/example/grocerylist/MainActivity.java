@@ -12,6 +12,7 @@ import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -63,6 +64,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private GridView gridView;
 
     private TextView listEmpty;
+    private GroListAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,7 +121,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 Log.i("MYDEBUG", "GridView height: " + gridView.getHeight());
 
                 // create the adapter for the gridview send the height of the gridview to the adapter
-                GroListAdapter adapter = new GroListAdapter(MainActivity.this, groList, height);
+                adapter = new GroListAdapter(MainActivity.this, groList, height);
                 // set the adapter for the gridview
                 gridView.setAdapter(adapter);
 
@@ -128,6 +130,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         });
 
         gridView.setOnItemClickListener(this::onItemClick);
+        gridView.setOnItemLongClickListener(this::onItemLongClick);
 
         //Receives results back and adds new item to the grocery list.
         launcher = registerForActivityResult(
@@ -166,7 +169,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                             }
                             //For adding new item image onto grocery list.
                             int height = gridView.getHeight();
-                            GroListAdapter adapter = new GroListAdapter(MainActivity.this, groList, height);
+                            adapter = new GroListAdapter(MainActivity.this, groList, height);
                             gridView.setAdapter(adapter);
                             //updated current grocery list
                             Log.i("MYDEBUG", "Current Grocery List:");
@@ -213,7 +216,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                             }
                             //For adding new item image onto grocery list.
                             int height = gridView.getHeight();
-                            GroListAdapter adapter = new GroListAdapter(MainActivity.this, groList, height);
+                            adapter = new GroListAdapter(MainActivity.this, groList, height);
                             gridView.setAdapter(adapter);
                             if(groList.length() == 0){
                                 listEmpty.setVisibility(View.VISIBLE);
@@ -254,6 +257,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     }
 
+
+
+
     /*
        currentAcceleration calculates total acceleration with 3 axes from the formula below
            https://physics.stackexchange.com/questions/41653/how-do-i-get-the-total-acceleration-from-3-axes
@@ -290,6 +296,26 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         myIntent.putExtra("name", groList.getItemAtIndex(position).getName());
         myIntent.putExtra("quantity", groList.getItemAtIndex(position).getQuantity());
         launcher2.launch(myIntent);
+    }
+
+    private boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long l){
+        if(groList.getItemAtIndex(position).getChecked()){
+            groList.getItemAtIndex(position).setChecked(false);
+        }else{
+            GroItem item = groList.getItemAtIndex(position);
+            item.setChecked(true);
+
+            for(GroItem i: groList.getItems()){
+                if(i.getName() == item.getName()){
+                    groList.removeItem(i);
+                    break;
+                }
+            }
+
+            groList.addItem(item);
+        }
+        adapter.notifyDataSetChanged();
+        return true;
     }
 
     // setup an Options menu
